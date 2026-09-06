@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAHARA - Offline Rescue Mesh</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--lav:#E9D5FF; --lav2:#C4A7E7; --deep:#8B5CF6; --white:#fff; --green:#22C55E; --orange:#F59E0B; --red:#EF4444}
+*{font-family:'Poppins',sans-serif; box-sizing:border-box}
+body{margin:0; background:linear-gradient(180deg,#FFFBFF 0%,#E9D5FF 100%); min-height:100vh}
+.app{max-width:480px; margin:0 auto; padding:16px}
+header{background:var(--white); padding:22px; border-radius:26px; text-align:center; box-shadow:0 10px 30px rgba(139,92,246,.18)}
+.logo{font-size:30px; font-weight:700; color:var(--deep)}
+header p{color:#6B7280; margin:4px 0 10px; font-size:13px}
+.badge{background:var(--lav); padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700; display:inline-block}
+#dot{display:inline-block; width:9px; height:9px; background:var(--green); border-radius:50%; animation: blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1} 50%{opacity:0.3}}
+.card{background:var(--white); border-radius:26px; padding:20px; margin-top:16px; box-shadow:0 10px 30px rgba(139,92,246,.14)}
+.card h2{margin:0 0 14px; color:#4C1D95; font-size:18px}
+label{font-size:12px; font-weight:600; color:#6B7280; margin-bottom:6px; display:block}
+input, textarea{width:100%; padding:15px; border:2px solid var(--lav); border-radius:16px; font-size:16px; outline:none; background:#FFFDFF}
+input:focus, textarea:focus{border-color:var(--deep)}
+textarea{height:100px; resize:none}
+.row{display:flex; gap:8px}
+.mic{border:none; background:var(--lav); border-radius:14px; padding:0 18px; font-size:20px; cursor:pointer; min-width:56px; transition:0.2s}
+.mic.listening{background:var(--red); color:white; animation: pulse 1s infinite}
+.status-wrap{display:flex; gap:8px}
+.s-btn{flex:1; padding:16px 4px; border-radius:16px; border:2px solid var(--lav); background:white; font-weight:700; cursor:pointer; transition:0.2s; font-size:13px}
+.s-btn.active{color:white; transform:scale(1.05)}
+.s-btn[data-s="SAFE"].active{background:var(--green); border-color:var(--green)}
+.s-btn[data-s="INJURED"].active{background:var(--orange); border-color:var(--orange)}
+.s-btn[data-s="CRITICAL"].active{background:var(--red); border-color:var(--red); animation: pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)} 70%{box-shadow:0 0 0 12px rgba(239,68,68,0)} 100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+.send{width:100%; margin-top:14px; padding:18px; border:none; border-radius:18px; background:var(--deep); color:white; font-size:17px; font-weight:700; cursor:pointer; box-shadow:0 10px 20px rgba(139,92,246,.35)}
+.sos{flex:1; background:var(--red); color:white; border:none; border-radius:14px; font-weight:700; cursor:pointer; padding:14px}
+.top{display:flex; justify-content:space-between; align-items:center}
+.small{border:none; background:var(--lav); padding:6px 12px; border-radius:10px; cursor:pointer; font-weight:600}
+#feed{max-height:420px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; margin-top:12px}
+.msg{padding:14px; border-radius:18px; background:#FAF5FF; border-left:7px solid var(--lav2)}
+.msg.SAFE{border-left-color:var(--green)}.msg.INJURED{border-left-color:var(--orange)}.msg.CRITICAL{border-left-color:var(--red); background:#FFF1F2}
+.msg b{color:#4C1D95}.msg p{margin:6px 0 0}
+.read{margin-top:8px; border:none; background:white; padding:6px 10px; border-radius:10px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.voice-status{font-size:11px; color:var(--red); font-weight:700; margin-top:4px; display:none}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo">🛟 SAHARA</div>
+    <p>100% Offline Disaster Communication App</p>
+      <div class="badge"><span id="dot"></span> <span id="mesh">Mesh Active - Connecting...</span></div>
+      </header>
+
+      <div class="card">
+        <h2>👤 Your Details</h2>
+          <label>Your Name - Tap 🎤 to Speak</label>
+            <div class="row" style="margin-bottom:4px">
+                <input id="name" placeholder="Ex: Aarav Sharma">
+                    <button class="mic" id="mic-name" onclick="voice('name', 'mic-name')">🎤</button>
+                      </div>
+                        <div id="vs-name" class="voice-status">🎙️ Listening... Speak now</div>
+
+                          <label style="margin-top:12px">Your Age</label>
+                            <input id="age" type="number" placeholder="Ex: 21" style="margin-bottom:12px">
+                              <label>Select Your Condition</label>
+                                <div class="status-wrap">
+                                    <button class="s-btn" data-s="SAFE" onclick="pick(this)">😊<br>SAFE</button>
+                                        <button class="s-btn" data-s="INJURED" onclick="pick(this)">🤕<br>INJURED</button>
+                                            <button class="s-btn" data-s="CRITICAL" onclick="pick(this)">🆘<br>CRITICAL</button>
+                                              </div>
+                                              </div>
+
+                                              <div class="card">
+                                                <h2>📢 Describe Your Situation</h2>
+                                                  <textarea id="sit" placeholder="Ex: I am stuck on roof, 2 kids with me, need food and rescue..."></textarea>
+                                                    <div id="vs-sit" class="voice-status">🎙️ Listening... Speak your situation</div>
+                                                      <div class="row" style="margin-top:10px">
+                                                          <button class="mic" id="mic-sit" style="flex:1; padding:12px" onclick="voice('sit', 'mic-sit')">🎤 Speak Situation</button>
+                                                              <button class="sos" onclick="sendSOS()">🚨 SOS</button>
+                                                                </div>
+                                                                  <button class="send" onclick="send()">📡 BROADCAST TO EVERYONE NEARBY</button>
+                                                                  </div>
+
+                                                                  <div class="card">
+                                                                    <div class="top">
+                                                                        <h2>🌐 Live People Near You</h2>
+                                                                            <button class="small" onclick="clearAll()">Clear</button>
+                                                                              </div>
+                                                                                <div id="feed"></div>
+                                                                                </div>
+                                                                                </div>
+
+                                                                                <script>
+                                                                                let status = null;
+                                                                                let msgs = JSON.parse(localStorage.getItem('sahara')||'[]');
+                                                                                const channel = new BroadcastChannel('sahara_v2');
+                                                                                channel.onmessage = e => { if(e.data.t==='MSG'){ save(e.data.d, false) } };
+
+                                                                                function pick(el){
+                                                                                  document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));
+                                                                                    el.classList.add('active'); status = el.dataset.s;
+                                                                                      if(navigator.vibrate) navigator.vibrate(40);
+                                                                                      }
+
+                                                                                      // --- FIXED VOICE FUNCTION ---
+                                                                                      async function voice(inputId, btnId){
+                                                                                        const btn = document.getElementById(btnId);
+                                                                                          const statusEl = document.getElementById('vs-' + inputId.split('-')[0] || inputId);
+                                                                                            const vsName = document.getElementById('vs-name');
+                                                                                              const vsSit = document.getElementById('vs-sit');
+                                                                                                const currentStatus = inputId === 'name'? vsName : vsSit;
+
+                                                                                                  const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+                                                                                                    if(!SpeechAPI){
+                                                                                                        alert('Voice typing needs Chrome / Edge browser. Please type for now.');
+                                                                                                            return;
+                                                                                                              }
+
+                                                                                                                try {
+                                                                                                                    // Ask for mic permission first - this was the bug
+                                                                                                                        await navigator.mediaDevices.getUserMedia({audio:true});
+                                                                                                                          } catch(err){
+                                                                                                                              alert('Please Allow Microphone permission to use voice typing. Check browser address bar.');
+                                                                                                                                  return;
+                                                                                                                                    }
+
+                                                                                                                                      const rec = new SpeechAPI();
+                                                                                                                                        rec.lang = 'en-IN';
+                                                                                                                                          rec.interimResults = false;
+                                                                                                                                            rec.continuous = false;
+
+                                                                                                                                              btn.classList.add('listening');
+                                                                                                                                                btn.innerHTML = '🔴';
+                                                                                                                                                  currentStatus.style.display = 'block';
+
+                                                                                                                                                    rec.start();
+
+                                                                                                                                                      rec.onresult = (e) => {
+                                                                                                                                                          const text = e.results[0][0].transcript;
+                                                                                                                                                              const input = document.getElementById(inputId);
+                                                                                                                                                                  // For situation, append, for name, replace
+                                                                                                                                                                      if(inputId === 'sit' && input.value.trim()!== ''){
+                                                                                                                                                                            input.value = input.value + ' ' + text;
+                                                                                                                                                                                } else {
+                                                                                                                                                                                      input.value = text;
+                                                                                                                                                                                          }
+                                                                                                                                                                                            };
+
+                                                                                                                                                                                              rec.onerror = (e) => {
+                                                                                                                                                                                                  currentStatus.style.display = 'none';
+                                                                                                                                                                                                      btn.classList.remove('listening');
+                                                                                                                                                                                                          btn.innerHTML = '🎤';
+                                                                                                                                                                                                              if(e.error === 'not-allowed') alert('Mic blocked. Please allow microphone.');
+                                                                                                                                                                                                                  else alert('Voice error: ' + e.error + '. Try again.');
+                                                                                                                                                                                                                    };
+
+                                                                                                                                                                                                                      rec.onend = () => {
+                                                                                                                                                                                                                          currentStatus.style.display = 'none';
+                                                                                                                                                                                                                              btn.classList.remove('listening');
+                                                                                                                                                                                                                                  btn.innerHTML = '🎤';
+                                                                                                                                                                                                                                    };
+                                                                                                                                                                                                                                    }
+
+                                                                                                                                                                                                                                    function send(isSOS=false){
+                                                                                                                                                                                                                                      const n = document.getElementById('name').value.trim();
+                                                                                                                                                                                                                                        const a = document.getElementById('age').value.trim();
+                                                                                                                                                                                                                                          const s = document.getElementById('sit').value.trim();
+                                                                                                                                                                                                                                            if(!n ||!a ||!status ||!s){ alert('Please fill Name, Age, Status and Situation!'); return; }
+                                                                                                                                                                                                                                              const data = {id:Date.now(), name:n, age:a, status:status, text:s, time:new Date().toLocaleTimeString(), sos:isSOS};
+                                                                                                                                                                                                                                                save(data, true);
+                                                                                                                                                                                                                                                  document.getElementById('sit').value='';
+                                                                                                                                                                                                                                                    if(navigator.vibrate) navigator.vibrate([100,50,150]);
+                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                    function sendSOS(){
+                                                                                                                                                                                                                                                      if(!status) { document.querySelector('[data-s="CRITICAL"]').classList.add('active'); status='CRITICAL'; }
+                                                                                                                                                                                                                                                        document.getElementById('sit').value = '🚨 SOS EMERGENCY! NEED IMMEDIATE RESCUE! ' + document.getElementById('sit').value;
+                                                                                                                                                                                                                                                          send(true);
+                                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                                          function save(d, broadcast){
+                                                                                                                                                                                                                                                            msgs.unshift(d);
+                                                                                                                                                                                                                                                              localStorage.setItem('sahara', JSON.stringify(msgs));
+                                                                                                                                                                                                                                                                if(broadcast) channel.postMessage({t:'MSG', d:d});
+                                                                                                                                                                                                                                                                  render();
+                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                                  function render(){
+                                                                                                                                                                                                                                                                    const f = document.getElementById('feed');
+                                                                                                                                                                                                                                                                      document.getElementById('mesh').innerText = `Mesh Active - ${msgs.length} People Found Offline`;
+                                                                                                                                                                                                                                                                        if(msgs.length==0){ f.innerHTML="<p style='text-align:center;color:#999;padding:20px'>No messages yet.<br>Your message will be first & visible to all.</p>"; return; }
+                                                                                                                                                                                                                                                                          f.innerHTML = msgs.map(m=>`
+                                                                                                                                                                                                                                                                              <div class="msg ${m.status}">
+                                                                                                                                                                                                                                                                                    <div style="display:flex; justify-content:space-between; font-size:13px"><b>${m.sos?'🚨 SOS - ':''}${m.name} (${m.age}) • ${m.status}</b><span>${m.time}</span></div>
+                                                                                                                                                                                                                                                                                          <p>${m.text}</p>
+                                                                                                                                                                                                                                                                                                <button class="read" onclick="readAloud('${m.text.replace(/'/g,"")}')">🔊 Read Aloud</button>
+                                                                                                                                                                                                                                                                                                    </div>`).join('');
+                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                    function readAloud(t){ const u=new SpeechSynthesisUtterance(t); u.lang='en-IN'; speechSynthesis.speak(u); }
+                                                                                                                                                                                                                                                                                                    function clearAll(){ if(confirm('Delete all offline messages?')){ msgs=[]; localStorage.removeItem('sahara'); render(); } }
+                                                                                                                                                                                                                                                                                                    render();
+                                                                                                                                                                                                                                                                                                    </script>
+                                                                                                                                                                                                                                                                                                    </body>
+                                                                                                                                                                                                                                                                                                    </html>
