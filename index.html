@@ -2,19 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SAHARA SAHAYOG - Worldwide Rescue Network</title>
-<link rel="manifest" href="manifest.json">
-<meta name="description" content="SAHARA SAHAYOG - Rescue Network with Live Map">
+<title>SAHARA - Worldwide Rescue Network</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{--lav:#E9D5FF;--deep:#8B5CF6;--green:#22C55E;--orange:#F59E0B;--red:#EF4444}
 *{font-family:'Poppins',sans-serif;box-sizing:border-box}
 body{margin:0;background:linear-gradient(180deg,#FFFBFF 0%,#E9D5FF 100%);min-height:100vh}
 .app{max-width:480px;margin:0 auto;padding:16px}
 header{background:#fff;padding:22px;border-radius:26px;text-align:center;box-shadow:0 10px 30px rgba(139,92,246,.18)}
-.logo{font-size:26px;font-weight:700;color:var(--deep)}
+.logo{font-size:30px;font-weight:700;color:var(--deep)}
 .badge{background:var(--lav);padding:7px 16px;border-radius:20px;font-size:12px;font-weight:700}
 .card{background:#fff;border-radius:26px;padding:20px;margin-top:16px;box-shadow:0 10px 30px rgba(139,92,246,.14)}
 input,textarea,select{width:100%;padding:15px;border:2px solid var(--lav);border-radius:16px;outline:none;font-size:16px}
@@ -38,129 +34,144 @@ input,textarea,select{width:100%;padding:15px;border:2px solid var(--lav);border
 .locTag a{color:#0284C7;font-weight:700;text-decoration:none;background:#fff;padding:5px 10px;border-radius:8px}
 .pmsg{padding:8px 12px;border-radius:12px;font-size:13px;max-width:85%}.pmsg.mine{background:var(--deep);color:#fff;align-self:flex-end}.pmsg.other{background:#fff;align-self:flex-start;border:1px solid var(--lav)}
 .bigBtn{width:100%;padding:22px;border-radius:22px;border:none;font-size:22px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.2)}
-#map{height:320px;border-radius:20px;margin-top:10px;border:2px solid var(--lav)}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
-<div class="logo">🛟 SAHARA SAHAYOG</div>
+<div class="logo">🛟 SAHARA</div>
 <p style="font-size:13px;color:#666;margin:4px 0">Worldwide Rescue Network</p>
 <div class="badge">🌍 <span id="count">Connecting...</span></div>
 <div class="row" style="margin-top:10px">
 <select id="lang" onchange="setLang(this.value)" style="flex:1;padding:8px;border-radius:20px;font-weight:700"><option value="en">🇬🇧 English</option><option value="hi">🇮🇳 Hindi</option><option value="ne">🇳🇵 Nepali</option></select>
-<button onclick="devLogin()" style="font-size:10px;border:none;background:#111;color:#fff;padding:8px;border-radius:20px;cursor:pointer">🔑 Dev</button>
-<button onclick="rescuerLogin()" style="font-size:10px;border:none;background:#0EA5E9;color:#fff;padding:8px;border-radius:20px;cursor:pointer">⛑️ Rescuer</button>
+<button onclick="devLogin()" style="flex:1;font-size:11px;border:none;background:#111;color:#fff;padding:8px;border-radius:20px;cursor:pointer">🔑 Dev Login</button>
 </div>
-<div id="devStatus" style="font-size:10px;color:#666;margin-top:4px">User Mode - Exact GPS hidden</div>
+<div id="devStatus" style="font-size:10px;color:#666;margin-top:4px">User Mode - Delete disabled</div>
 </header>
 
 <div class="card" style="background:linear-gradient(135deg,#FEF2F2,#FECACA);border:3px solid var(--red);text-align:center">
-<h2 style="margin:0;color:var(--red);font-size:16px">🔊 CAN'T TYPE? PRESS FOR HELP</h2>
-<p style="font-size:11px;color:#666;margin:6px 0">बच्चे / बुजुर्ग - सिर्फ यह दबाओ। 3 मिनट बाद आवाज बंद, लोकेशन भेजता रहेगा</p>
-<button id="sirenBtn" class="bigBtn" onclick="toggleSiren()" style="background:var(--red);color:#fff;margin-top:8px">🔊 SIREN ON<br><span style="font-size:12px">Auto Location + Loud Sound (Auto off in 3 min)</span></button>
-<p id="sirenInfo" style="font-size:11px;color:#991B1B;margin-top:8px;display:none">🔴 SIREN ON - Tap to STOP. Saving battery...</p>
+<h2 style="margin:0;color:var(--red);font-size:17px">🔊 CAN'T TYPE? PRESS FOR HELP - AUTO LOCATION</h2>
+<p style="font-size:11px;color:#666;margin:6px 0">बच्चे / बुजुर्ग / अनपढ़ - सिर्फ यह बटन दबाओ</p>
+<button id="sirenBtn" class="bigBtn" onclick="toggleSiren()" style="background:var(--red);color:#fff;margin-top:8px">🔊 SIREN ON<br><span style="font-size:13px">Auto Shares Location + Loud Sound</span></button>
+<p id="sirenInfo" style="font-size:11px;color:#991B1B;margin-top:8px;display:none">🔴 SIREN ON + LOCATION SENT TO WORLD - Tap again to STOP</p>
 </div>
 
 <div class="card">
-<label style="font-size:11px;font-weight:700;color:#666">YOUR NAME</label>
+<label id="l_name" style="font-size:11px;font-weight:700;color:#666">YOUR NAME</label>
 <div class="row" style="margin-bottom:10px"><input id="name" placeholder="Ex: Aarav"><button class="mic" onclick="voice('name',this)">🎤</button></div>
-<label style="font-size:11px;font-weight:700;color:#666">AGE</label><input id="age" type="number" placeholder="21" style="margin-bottom:12px">
+<label id="l_age" style="font-size:11px;font-weight:700;color:#666">AGE</label><input id="age" type="number" placeholder="21" style="margin-bottom:12px">
 <div class="row"><button class="s-btn" data-s="SAFE" onclick="pick(this)">😊 SAFE</button><button class="s-btn" data-s="INJURED" onclick="pick(this)">🤕 INJURED</button><button class="s-btn" data-s="CRITICAL" onclick="pick(this)">🆘 CRITICAL</button></div>
 </div>
 
 <div class="card">
-<textarea id="sit" placeholder="Describe... Kids just press SIREN above"></textarea>
+<textarea id="sit" placeholder="Describe your situation..."></textarea>
 <div id="locStatus" style="display:none;margin-top:8px;background:#DCFCE7;padding:10px;border-radius:12px;font-size:12px;color:#166534;font-weight:600"></div>
 <div class="row" style="margin-top:10px"><button class="mic" style="flex:1;padding:12px" onclick="voice('sit',this)">🎤 Speak</button><button class="locBtn" onclick="getLoc()">📍 Live Location</button><button class="sos" onclick="sendSOS()">🚨 SOS</button></div>
 <button class="send" id="b_broadcast" onclick="send()">📡 BROADCAST TO WORLD</button>
-<p style="font-size:10px;color:#999;text-align:center;margin-top:6px">Limit: 1 broadcast per 10 mins to stop spam</p>
-</div>
-
-<div class="card">
-<h3 style="margin:0;color:#4C1D95;font-size:16px">🗺️ LIVE RESCUE MAP</h3>
-<p style="font-size:11px;color:#666;margin:4px 0">🔴 Critical 🟠 Injured 🟢 Safe - Tap pin to help</p>
-<div id="map"></div>
 </div>
 
 <div class="card" id="privateBox" style="display:none;border:2px solid var(--deep)">
-<h3 style="margin:0 0 10px;color:var(--deep)">💬 Private with <span id="pTarget"></span> <button onclick="closeP()" style="float:right;border:none;background:var(--lav);padding:4px 10px;border-radius:8px">X</button></h3>
+<h3 style="margin:0 0 10px;color:var(--deep)">💬 Private with <span id="pTarget"></span> <button onclick="closeP()" style="float:right;border:none;background:var(--lav);padding:4px 10px;border-radius:8px;cursor:pointer">X</button></h3>
 <div id="pFeed" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:10px;background:#FAF5FF;padding:10px;border-radius:12px"></div>
-<div class="row"><input id="pInput" placeholder="Type private..."><button class="send" style="width:auto;margin:0;padding:12px 20px" onclick="sendPrivate()">Send</button></div>
+<div class="row"><input id="pInput" placeholder="Type private message..."><button class="send" style="width:auto;margin:0;padding:12px 20px" onclick="sendPrivate()">Send</button></div>
 </div>
 
 <div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;color:#4C1D95;font-size:16px">🌍 Live Feed</h3><button id="clearBtn" style="display:none;border:none;background:var(--red);color:#fff;padding:6px 12px;border-radius:10px;font-weight:600" onclick="clearAll()">Clear All (Dev)</button></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0;color:#4C1D95;font-size:16px">🌍 Live From World</h3><button id="clearBtn" style="display:none;border:none;background:var(--red);color:#fff;padding:6px 12px;border-radius:10px;font-weight:600;cursor:pointer" onclick="clearAll()">Clear All (Dev)</button></div>
 <div class="row" style="margin-top:12px"><button class="fil active" onclick="filterFeed('ALL',this)">All</button><button class="fil" onclick="filterFeed('SAFE',this)">😊 SAFE</button><button class="fil" onclick="filterFeed('INJURED',this)">🤕 INJURED</button><button class="fil" onclick="filterFeed('CRITICAL',this)">🆘 CRITICAL</button></div>
 <div id="feed"></div>
 </div>
 
 <div class="card">
 <h3 style="margin:0 0 10px;color:#4C1D95;font-size:16px">🔒 My Private Chats</h3>
-<div id="myPrivateList" style="font-size:13px;color:#666">Enter your name</div>
+<div id="myPrivateList" style="font-size:13px;color:#666">Enter your name to see chats</div>
 </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
-const firebaseConfig = {apiKey:"AIzaSyDHk9kRv24-gIQUMRKtihHGoravvXN1r9E",authDomain:"real-sahara.firebaseapp.com",projectId:"real-sahara",storageBucket:"real-sahara.firebasestorage.app",messagingSenderId:"104403006710",appId:"1:104403006710:web:d0781f49545a902f4128d7"};
+const firebaseConfig = {
+  apiKey: "AIzaSyDHk9kRv24-gIQUMRKtihHGoravvXN1r9E",
+  authDomain: "real-sahara.firebaseapp.com",
+  databaseURL: "https://real-sahara-default-rtdb.firebaseio.com",
+  projectId: "real-sahara",
+  storageBucket: "real-sahara.firebasestorage.app",
+  messagingSenderId: "104403006710",
+  appId: "1:104403006710:web:d0781f49545a902f4128d7",
+  measurementId: "G-88D7PLELXT"
+};
 firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-let status=null,currentLoc=null,privateTarget=null,isDev=false,isRescuer=false,allMsgs=[],currentFilter='ALL';
-const DEV_PASS="SaharaDevRescue"; const RESCUE_PASS="RescueTeam2026";
-let map=L.map('map').setView([26.5,88.5],5); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); let markers=L.layerGroup().addTo(map);
+const db = firebase.firestore();
+let status=null, currentLoc=null, privateTarget=null, isDev=false, allMsgs=[], currentFilter='ALL';
+const DEV_PASS = "SaharaDevRescue";
 
-let audioCtx=null,osc1=null,sirenInterval=null,isSirenOn=false,silentLocInterval=null,sirenAutoOff=null;
+let audioCtx=null, osc1=null, sirenInterval=null, isSirenOn=false;
 function toggleSiren(){
- const btn=document.getElementById('sirenBtn'); const info=document.getElementById('sirenInfo');
- const name=document.getElementById('name').value.trim()||"Unknown"; const age=document.getElementById('age').value.trim()||"??";
- if(!isSirenOn){
-   isSirenOn=true; if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-   btn.innerHTML="🔇 STOP SIREN<br><span style='font-size:12px'>Tap to Stop - Auto off in 3 min</span>"; btn.classList.add('sirenOn'); info.style.display='block'; info.innerText="🔴 SIREN ON (3 min) then silent tracking...";
-   if(navigator.vibrate) navigator.vibrate([500,200,500]);
-   if(navigator.geolocation){navigator.geolocation.getCurrentPosition(pos=>{const loc={lat:pos.coords.latitude,lng:pos.coords.longitude}; currentLoc=loc; db.collection('sahara_global').add({name:name,age:age,status:"CRITICAL",text:"🚨🔊 SIREN EMERGENCY! I CAN'T TYPE! HELP!",time:new Date().toLocaleString(),at:Date.now(),sos:true,loc:loc,isSiren:true});});}
-   let high=true; sirenInterval=setInterval(()=>{if(osc1){try{osc1.stop();}catch(e){}} osc1=audioCtx.createOscillator(); let gain=audioCtx.createGain(); osc1.type='sawtooth'; osc1.frequency.value=high?1300:600; gain.gain.value=0.8; osc1.connect(gain); gain.connect(audioCtx.destination); osc1.start(); setTimeout(()=>{try{osc1.stop();}catch(e){}},400); high=!high; if(navigator.vibrate) navigator.vibrate(300);},600);
-   // Auto-off after 3 mins - FIX POINT 14
-   sirenAutoOff=setTimeout(()=>{ stopSirenSound(); info.innerText="🔇 Siren auto-off to save battery. Sending silent location every 30 sec..."; startSilentTracking(name,age); }, 3*60*1000);
- }else{ stopAllSiren(); }
+  const btn=document.getElementById('sirenBtn'); const info=document.getElementById('sirenInfo');
+  const name=document.getElementById('name').value.trim() || "Unknown";
+  const age=document.getElementById('age').value.trim() || "??";
+  if(!isSirenOn){
+    isSirenOn=true;
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    btn.innerHTML="🔇 STOP SIREN<br><span style='font-size:13px'>Tap to Stop</span>"; btn.classList.add('sirenOn'); info.style.display='block';
+    if(navigator.vibrate) navigator.vibrate([500,200,500,200,500]);
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(pos=>{
+        const loc={lat:pos.coords.latitude,lng:pos.coords.longitude}; currentLoc=loc;
+        db.collection('sahara_global').add({name:name,age:age,status:"CRITICAL",text:"🚨🔊 SIREN EMERGENCY! I CAN'T TYPE OR SPEAK! PLEASE HELP! SIREN ON! 🔊🚨",time:new Date().toLocaleString(),at:Date.now(),sos:true,loc:loc,isSiren:true});
+        document.getElementById('locStatus').style.display='block'; document.getElementById('locStatus').innerHTML=`📍 SIREN LOCATION SENT: ${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)}`;
+      }, err=>{
+        db.collection('sahara_global').add({name:name,age:age,status:"CRITICAL",text:"🚨🔊 SIREN EMERGENCY! PLEASE HELP! (Allow location)",time:new Date().toLocaleString(),at:Date.now(),sos:true,loc:null,isSiren:true});
+        alert("Allow location permission for rescue!");
+      }, {enableHighAccuracy:true});
+    }
+    let high=true;
+    sirenInterval=setInterval(()=>{
+      if(osc1){try{osc1.stop();}catch(e){}}
+      osc1=audioCtx.createOscillator(); let gain=audioCtx.createGain(); osc1.type='sawtooth'; osc1.frequency.value=high?1300:600; gain.gain.value=0.9;
+      osc1.connect(gain); gain.connect(audioCtx.destination); osc1.start(); setTimeout(()=>{try{osc1.stop();}catch(e){}},400); high=!high;
+      if(navigator.vibrate) navigator.vibrate(400);
+    },500);
+    if('speechSynthesis' in window){
+      setInterval(()=>{if(!isSirenOn) return; let u=new SpeechSynthesisUtterance("HELP HELP SOS I NEED HELP"); u.volume=1; u.rate=1.3; speechSynthesis.speak(u);},2500);
+    }
+  }else{
+    isSirenOn=false; btn.innerHTML="🔊 SIREN ON<br><span style='font-size:13px'>Auto Shares Location + Loud Sound</span>"; btn.classList.remove('sirenOn'); info.style.display='none';
+    clearInterval(sirenInterval); if(osc1){try{osc1.stop();}catch(e){}} if(navigator.vibrate) navigator.vibrate(0); speechSynthesis.cancel();
+  }
 }
-function stopSirenSound(){ clearInterval(sirenInterval); if(osc1){try{osc1.stop();}catch(e){}} if(navigator.vibrate) navigator.vibrate(0); speechSynthesis.cancel(); }
-function startSilentTracking(name,age){
- silentLocInterval=setInterval(()=>{ if(!isSirenOn) {clearInterval(silentLocInterval); return;} navigator.geolocation.getCurrentPosition(pos=>{ db.collection('sahara_global').add({name:name,age:age,status:"CRITICAL",text:"📍 Silent tracking after siren - Still need help",time:new Date().toLocaleString(),at:Date.now(),sos:false,loc:{lat:pos.coords.latitude,lng:pos.coords.longitude},isSilent:true}); },()=>{}, {enableHighAccuracy:true}); }, 30000);
- setTimeout(()=>{clearInterval(silentLocInterval); if(isSirenOn){isSirenOn=false; document.getElementById('sirenBtn').innerHTML="🔊 SIREN ON<br><span style='font-size:12px'>Auto Location + Loud Sound</span>"; document.getElementById('sirenBtn').classList.remove('sirenOn'); document.getElementById('sirenInfo').style.display='none';}}, 10*60*1000);
-}
-function stopAllSiren(){ isSirenOn=false; stopSirenSound(); clearTimeout(sirenAutoOff); clearInterval(silentLocInterval); document.getElementById('sirenBtn').innerHTML="🔊 SIREN ON<br><span style='font-size:12px'>Auto Location + Loud Sound (Auto off in 3 min)</span>"; document.getElementById('sirenBtn').classList.remove('sirenOn'); document.getElementById('sirenInfo').style.display='none';}
-
-const LANG={en:{yourname:"YOUR NAME",age:"AGE",sit:"Describe... Kids press SIREN"},hi:{yourname:"आपका नाम",age:"उम्र",sit:"स्थिति... सायरन दबाएं"},ne:{yourname:"तपाईंको नाम",age:"उमेर",sit:"अवस्था... सायरन"}};
-function setLang(l){const d=LANG[l];}
-function devLogin(){const p=prompt("Dev Password:"); if(p===DEV_PASS){isDev=true; isRescuer=true; document.getElementById('devStatus').innerText="✅ Dev + Rescuer - Full Access"; document.getElementById('clearBtn').style.display="block"; alert("Dev ON"); renderFeed();}}
-function rescuerLogin(){const p=prompt("Rescuer Password:"); if(p===RESCUE_PASS||p===DEV_PASS){isRescuer=true; document.getElementById('devStatus').innerText="✅ Rescuer Mode - Exact GPS visible"; document.getElementById('devStatus').style.color="#0EA5E9"; alert("Rescuer ON - You can see exact location"); renderFeed();} else if(p!==null){alert("Wrong - Contact dev for password");}}
+const LANG = {
+ en: {yourname:"YOUR NAME", age:"AGE", sit:"Describe... Kids just press SIREN above", speak:"🎤 Speak", broadcast:"📡 BROADCAST TO WORLD", live:"📍 Live Location", sos:"🚨 SOS", safe:"😊 SAFE", injured:"🤕 INJURED", critical:"🆘 CRITICAL"},
+ hi: {yourname:"आपका नाम", age:"उम्र", sit:"अपनी स्थिति... बच्चे सायरन दबाएं", speak:"🎤 बोलें", broadcast:"📡 दुनिया को भेजें", live:"📍 लाइव लोकेशन", sos:"🚨 मदद", safe:"😊 सुरक्षित", injured:"🤕 घायल", critical:"🆘 गंभीर"},
+ ne: {yourname:"तपाईंको नाम", age:"उमेर", sit:"अवस्था... बच्चाहरूले सायरन थिच्नुहोस्", speak:"🎤 बोल्नुहोस्", broadcast:"📡 विश्वमा प्रसारण", live:"📍 लाइभ स्थान", sos:"🚨 एसओएस", safe:"😊 सुरक्षित", injured:"🤕 घाइते", critical:"🆘 गम्भीर"}
+};
+function setLang(l){const d=LANG[l]; document.getElementById('l_name').innerText=d.yourname; document.getElementById('l_age').innerText=d.age; document.getElementById('sit').placeholder=d.sit; document.getElementById('b_broadcast').innerText=d.broadcast; document.querySelector('.locBtn').innerText=d.live; document.querySelector('.sos').innerText=d.sos; document.querySelectorAll('.s-btn')[0].innerText=d.safe; document.querySelectorAll('.s-btn')[1].innerText=d.injured; document.querySelectorAll('.s-btn')[2].innerText=d.critical;}
+function devLogin(){const p=prompt("Enter Developer Password:"); if(p===DEV_PASS){isDev=true; document.getElementById('devStatus').innerText="✅ Developer Mode"; document.getElementById('devStatus').style.color="#22C55E"; document.getElementById('clearBtn').style.display="block"; alert("Dev mode ON"); renderFeed();} else if(p!==null){alert("Wrong password");}}
 function pick(el){document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');status=el.dataset.s;}
-function voice(id,btn){const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){alert('Use Chrome');return;} const r=new SR(); r.lang='en-IN'; btn.classList.add('listening'); let o=btn.innerHTML; btn.innerHTML='🔴 Listening...'; r.start(); r.onresult=e=>{document.getElementById(id).value=e.results[0][0].transcript;}; r.onend=()=>{btn.classList.remove('listening'); btn.innerHTML=o;}; r.onerror=()=>{btn.classList.remove('listening'); btn.innerHTML=o;};}
-function getLoc(){const btn=document.querySelector('.locBtn'); btn.innerText='⏳...'; navigator.geolocation.getCurrentPosition(pos=>{currentLoc={lat:pos.coords.latitude,lng:pos.coords.longitude}; document.getElementById('locStatus').style.display='block'; let show=isRescuer?`${currentLoc.lat},${currentLoc.lng}`:`${currentLoc.lat.toFixed(2)}... (exact for rescuers)`; document.getElementById('locStatus').innerHTML=`📍 ${show}`; btn.innerText='✅ Added';},err=>{alert('Allow location'); btn.innerText='📍 Live Location';},{enableHighAccuracy:true});}
-function canPost(){ const last=localStorage.getItem('lastPostTime'); if(!last) return true; const diff=Date.now()-parseInt(last); return diff>10*60*1000; }
-function send(isSOS=false){
- const n=document.getElementById('name').value.trim(), a=document.getElementById('age').value.trim(), s=document.getElementById('sit').value.trim();
- if(!n||!a||!status||!s){alert('Fill all');return;}
- if(!canPost() &&!isDev){ const left=Math.ceil((10*60*1000 - (Date.now()-parseInt(localStorage.getItem('lastPostTime'))))/60000); alert(`Anti-spam: Wait ${left} mins before next post. Siren still works.`); return; }
- db.collection('sahara_global').add({name:n,age:a,status:status,text:s,time:new Date().toLocaleString(),at:Date.now(),sos:isSOS,loc:currentLoc});
- localStorage.setItem('lastPostTime', Date.now().toString());
- document.getElementById('sit').value='';
-}
+function voice(id, btn){const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){alert('Use Chrome');return;} const r=new SR(); r.lang=document.getElementById('lang').value==='hi'?'hi-IN':document.getElementById('lang').value==='ne'?'ne-NP':'en-IN'; btn.classList.add('listening'); let orig=btn.innerHTML; btn.innerHTML='🔴 Listening...'; r.start(); r.onresult=e=>{document.getElementById(id).value=e.results[0][0].transcript;}; r.onend=()=>{btn.classList.remove('listening'); btn.innerHTML=orig;}; r.onerror=()=>{btn.classList.remove('listening'); btn.innerHTML=orig;};}
+function getLoc(){const btn=document.querySelector('.locBtn'); btn.innerText='⏳ Getting...'; navigator.geolocation.getCurrentPosition(pos=>{currentLoc={lat:pos.coords.latitude,lng:pos.coords.longitude}; document.getElementById('locStatus').style.display='block'; document.getElementById('locStatus').innerHTML=`📍 Live: ${currentLoc.lat.toFixed(5)}, ${currentLoc.lng.toFixed(5)} - Everyone will see`; btn.innerText='✅ Live Added'; btn.style.background='#22C55E';},err=>{alert('Allow location! '+err.message); btn.innerText='📍 Live Location';},{enableHighAccuracy:true});}
+function send(isSOS=false){const n=document.getElementById('name').value.trim(), a=document.getElementById('age').value.trim(), s=document.getElementById('sit').value.trim(); if(!n||!a||!status||!s){alert('Fill all fields');return;} db.collection('sahara_global').add({name:n,age:a,status:status,text:s,time:new Date().toLocaleString(),at:Date.now(),sos:isSOS,loc:currentLoc}); document.getElementById('sit').value=''; currentLoc=null; document.getElementById('locStatus').style.display='none'; const b=document.querySelector('.locBtn'); b.innerText=LANG[document.getElementById('lang').value].live; b.style.background='#0EA5E9';}
 function sendSOS(){if(!status){status='CRITICAL';document.querySelector('[data-s="CRITICAL"]').classList.add('active');}document.getElementById('sit').value='🚨 SOS EMERGENCY! '+document.getElementById('sit').value;send(true);}
-function filterFeed(f,btn){currentFilter=f; document.querySelectorAll('.fil').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); renderFeed();}
+function filterFeed(f, btn){currentFilter=f; document.querySelectorAll('.fil').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); renderFeed();}
 function renderFeed(){
- const f=document.getElementById('feed'); let msgs=currentFilter==='ALL'?allMsgs:allMsgs.filter(m=>m.status===currentFilter);
- document.getElementById('count').innerText=allMsgs.length+' Messages | '+msgs.length+' showing';
- markers.clearLayers();
- msgs.forEach(m=>{ if(m.loc&&m.loc.lat){ let color=m.status==='CRITICAL'?'red':m.status==='INJURED'?'orange':'green'; let icon=L.divIcon({html:`<div style="background:${color};width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>`,className:''}); L.marker([m.loc.lat,m.loc.lng],{icon:icon}).addTo(markers).bindPopup(`<b>${m.name} (${m.status})</b><br>${m.text.slice(0,50)}<br><button onclick="openPrivate('${m.name}')">Private Chat</button>`); }});
- if(!msgs.length){f.innerHTML='<p style="text-align:center;color:#999;padding:20px">No messages</p>';return;}
+ const f=document.getElementById('feed'); let msgs = currentFilter==='ALL'? allMsgs : allMsgs.filter(m=>m.status===currentFilter);
+ document.getElementById('count').innerText=allMsgs.length+' Worldwide | Showing '+msgs.length+' '+currentFilter;
+ if(!msgs.length){f.innerHTML='<p style="text-align:center;color:#999;padding:20px">No '+currentFilter+' messages</p>';return;}
  f.innerHTML=msgs.map(m=>{
-  let locHtml=''; if(m.loc&&m.loc.lat){ if(isRescuer||isDev){ const mapLink=`https://www.google.com/maps?q=${m.loc.lat},${m.loc.lng}`; locHtml=`<div class="locTag"><span>📍 ${m.loc.lat.toFixed(5)}, ${m.loc.lng.toFixed(5)}</span><a href="${mapLink}" target="_blank">Map 🗺️</a></div>`; } else { locHtml=`<div class="locTag"><span>📍 Location: ${m.loc.lat.toFixed(2)}..., ${m.loc.lng.toFixed(2)}... (Exact for rescuers)</span><span style="background:#fff;padding:5px 10px;border-radius:8px;font-size:10px">🔒 Rescuer only</span></div>`; } }
-  const delBtn=isDev?`<button class="del" onclick="delMsg('${m.id}')">🗑️</button>`:''; const badge=m.isSiren?`<div style="background:var(--red);color:#fff;padding:4px 8px;border-radius:8px;font-size:11px;display:inline-block">🔊 SIREN</div>`:m.isSilent?`<div style="background:#0EA5E9;color:#fff;padding:4px 8px;border-radius:8px;font-size:11px;display:inline-block">📍 Silent Track</div>`:'';
-  return `<div class="msg ${m.status}">${delBtn}${badge}<b>${m.sos?'🚨 ':''}${m.name} (${m.age}) • ${m.status}</b><br><small>${m.time}</small><p style="margin:8px 0 0">${m.text}</p>${locHtml}<div class="row" style="margin-top:8px"><button style="flex:1;border:none;background:#fff;padding:6px;border-radius:8px" onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('${m.text.replace(/'/g,'')}'))">🔊 Read</button><button style="flex:1;border:none;background:var(--deep);color:#fff;padding:6px;border-radius:8px" onclick="openPrivate('${m.name}')">💬 Private</button></div></div>`;
+   let locHtml=''; if(m.loc&&m.loc.lat){const mapLink=`https://www.google.com/maps?q=${m.loc.lat},${m.loc.lng}`; locHtml=`<div class="locTag"><span>📍 ${m.loc.lat.toFixed(4)}, ${m.loc.lng.toFixed(4)}</span><a href="${mapLink}" target="_blank">View Map 🗺️</a></div>`;}
+   const delBtn = isDev? `<button class="del" style="display:block" onclick="delMsg('${m.id}')">🗑️ Delete</button>` : '';
+   const sirenBadge = m.isSiren? `<div style="background:var(--red);color:#fff;padding:4px 8px;border-radius:8px;font-size:11px;font-weight:700;margin-bottom:6px;display:inline-block">🔊 SIREN - Can't type/speak</div><br>` : '';
+   return `<div class="msg ${m.status}">${delBtn}${sirenBadge}<b>${m.sos?'🚨 ':''}${m.name} (${m.age}) • ${m.status}</b><br><small>${m.time}</small><p style="margin:8px 0 0">${m.text}</p>${locHtml}<div class="row" style="margin-top:8px"><button style="flex:1;border:none;background:#fff;padding:6px;border-radius:8px;cursor:pointer" onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('${m.text.replace(/'/g,'')}'))">🔊 Read</button><button style="flex:1;border:none;background:var(--deep);color:#fff;padding:6px;border-radius:8px;cursor:pointer;font-weight:600" onclick="openPrivate('${m.name}')">💬 Private</button></div></div>`;
  }).join('');
 }
-db.collection('sahara_global').orderBy('at','desc').limit(100).onSnapshot(snap=>{allMsgs=[]; snap.forEach(doc=>{allMsgs.push({id:doc.id,...doc.data()});}); renderFeed(); if(allMsgs.length&&allMsgs[0].loc){map.setView([allMsgs[0].loc.lat,allMsgs[0].
+db.collection('sahara_global').orderBy('at','desc').onSnapshot(snap=>{allMsgs=[]; snap.forEach(doc=>{allMsgs.push({id:doc.id,...doc.data()});}); renderFeed();});
+function openPrivate(name){const myName=document.getElementById('name').value.trim(); if(!myName){alert('Enter YOUR NAME first'); return;} if(name===myName){alert('Cannot chat yourself'); return;} privateTarget=name; document.getElementById('pTarget').innerText=name; document.getElementById('privateBox').style.display='block'; document.getElementById('privateBox').scrollIntoView({behavior:'smooth'}); db.collection('private_chats').orderBy('at','asc').onSnapshot(snap=>{const pFeed=document.getElementById('pFeed'); let html=''; let c=0; snap.forEach(doc=>{const d=doc.data(); if((d.from===myName && d.to===privateTarget) || (d.from===privateTarget && d.to===myName)){c++; const cls=d.from===myName?'mine':'other'; html+=`<div class="pmsg ${cls}"><b>${d.from}:</b> ${d.text}<br><small style="font-size:10px;opacity:0.7">${d.time}</small></div>`;}}); pFeed.innerHTML=c?html:'<p style="text-align:center;color:#999;font-size:12px">No private messages yet</p>'; pFeed.scrollTop=pFeed.scrollHeight;});}
+function closeP(){document.getElementById('privateBox').style.display='none'; privateTarget=null;}
+function sendPrivate(){const myName=document.getElementById('name').value.trim(); const txt=document.getElementById('pInput').value.trim(); if(!txt) return; db.collection('private_chats').add({from:myName,to:privateTarget,text:txt,at:Date.now(),time:new Date().toLocaleString()}); document.getElementById('pInput').value='';}
+db.collection('private_chats').orderBy('at','desc').onSnapshot(snap=>{const myName=document.getElementById('name').value.trim(); const list=document.getElementById('myPrivateList'); if(!myName){list.innerText='Enter your name to see private chats'; return;} const chats={}; snap.forEach(doc=>{const d=doc.data(); if(d.from===myName || d.to===myName){const other=d.from===myName?d.to:d.from; if(!chats[other]) chats[other]=d;}}); const others=Object.keys(chats); if(!others.length){list.innerHTML='<p style="color:#999">No private chats yet.</p>';return;} list.innerHTML=others.map(o=>`<div style="padding:8px;background:#FAF5FF;border-radius:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center"><span>💬 ${o}<br><small style="color:#888">${chats[o].text.slice(0,30)}...</small></span><button onclick="openPrivate('${o}')" style="border:none;background:var(--deep);color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer">Open</button></div>`).join('');});
+function delMsg(id){if(!isDev){alert("Only developer. Click Dev Login"); return;} if(confirm('Delete for everyone?')){db.collection('sahara_global').doc(id).delete();}}
+function clearAll(){if(!isDev){alert("Only developer"); return;} if(confirm('Delete ALL worldwide?')){db.collection('sahara_global').get().then(s=>{s.forEach(d=>d.ref.delete());});}}
+</script>
+</body>
+</html>
